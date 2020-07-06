@@ -12,13 +12,8 @@ public class GameDataWindow : EditorWindow
     private Data MyData = new Data();
     private int Tab_Editor;
 
-    #region Create New Item
-    private Item CreateItem = new Item();
-    private int Create_ID;
-    private ItemType Create_Type;
-    private string Create_Name;
-    private Texture2D Create_Texture;
-    private string Create_TextureName;
+    #region 
+    private Item CreateItem = new Item() { Item_Type = ItemType.Spaceship };
     #endregion
 
     #region Edit Item
@@ -39,47 +34,49 @@ public class GameDataWindow : EditorWindow
         Tab_Editor = GUILayout.Toolbar(Tab_Editor, new string[] { "Create", "View", "Edit" });
 
         EditorGUILayout.Space(30);
-        switch (Tab_Editor)
-        {
-            case 0:
-                GUI_CreateNew();
-                break;
-            case 1:
-                GUI_ViewExisting();
-                break;
-            case 2:
-                GUI_Edit();
-                break;
-        }
+        /*   switch (Tab_Editor)
+           {
+               case 0:
+                   EditItem = null;
+                   GUI_Create_Edit();
+                   Add();
+                   break;
+               case 1:
+                   EditItem = null;
+                   GUI_ViewExisting();
+                   break;
+               case 2:
+                   GUI_Edit();
+                   break;
+           }*/
+     
     }
 
-    private void GUI_CreateNew()
+    private void GUI_Create_Edit()
     {
-        EditItem = null;
-
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Item ID");
-        GUILayout.Label(Create_ID.ToString());
+        GUILayout.Label(CreateItem.Item_Id.ToString());
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Item Name");
-        Create_Name = EditorGUILayout.TextField("Name");
+        CreateItem.Item_Name = EditorGUILayout.TextField("");
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Item Type");
-        Create_Type = (ItemType)EditorGUILayout.Popup((int)Create_Type, Enum.GetNames(typeof(ItemType)));
+        CreateItem.Item_Type = (ItemType)EditorGUILayout.Popup((int)CreateItem.Item_Type, Enum.GetNames(typeof(ItemType)));
         EditorGUILayout.EndHorizontal();
 
-        Create_ID = GenerateIdOnDropDownChange();
-        switch (Create_Type)
+        CreateItem.Item_Id = GenerateIdOnDropDownChange();
+        switch (CreateItem.Item_Type)
         {
             case ItemType.Spaceship:
-                Create_TextureName = GetImageName();
-
-
-                Ship ship = new Ship() { Game_Icon = Create_TextureName, Item_Id = Create_ID, Item_Name = Create_Name, Item_Type = ItemType.Spaceship, Stats = new Dictionary<StatType, int>() };
+                Ship ship = SpaceShipEditor.CreateShip();
+                ship.Item_Id = CreateItem.Item_Id;
+                ship.Item_Type = CreateItem.Item_Type;
+                ship.Item_Name = CreateItem.Item_Name;
                 CreateItem = ship;
                 break;
             case ItemType.Powerup:
@@ -91,9 +88,10 @@ public class GameDataWindow : EditorWindow
             default:
                 break;
         }
+    }
 
-
-
+    private void Add()
+    {
         if (GUILayout.Button("Add"))
         {
             MyData.Items.Add(CreateItem);
@@ -103,9 +101,9 @@ public class GameDataWindow : EditorWindow
 
     private int GenerateIdOnDropDownChange()
     {
-        int id = MyData.Items.Where(x => x.Item_Type == Create_Type).Count() + 1;
+        int id = MyData.Items.Where(x => x.Item_Type == CreateItem.Item_Type).Count() + 1;
         string formattedId = String.Format("{0:000}", id);
-        string fullID = string.Format("{0}{1}", (int)Create_Type + 1, formattedId);
+        string fullID = string.Format("{0}{1}", (int)CreateItem.Item_Type + 1, formattedId);
         int result;
         if (int.TryParse(fullID, out result))
         {
@@ -114,25 +112,10 @@ public class GameDataWindow : EditorWindow
         return -1;
     }
 
-    private string GetImageName()
-    {
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("GameItem Icon");
-        GUILayout.BeginHorizontal("box");
-        GUILayout.FlexibleSpace();
-        Create_Texture = (Texture2D)EditorGUILayout.ObjectField(Create_Texture, typeof(Texture2D), false, GUILayout.Width(70), GUILayout.Height(70));
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-        GUILayout.EndHorizontal();
-        if (Create_Texture != null)
-            return Path.GetFileName(AssetDatabase.GetAssetPath(Create_Texture.GetInstanceID()));
-        else
-            return string.Empty;
-    }
-
     private void OnEnable()
     {
         MyData.Pull();
+        MyData.Save();
     }
 
     private void GUI_ViewExisting()
@@ -160,7 +143,10 @@ public class GameDataWindow : EditorWindow
 
     private void GUI_Edit(Item item = null)
     {
-   
+        if (item != null)
+        {
+            GUI_Create_Edit();
+        }
 
     }
 }
