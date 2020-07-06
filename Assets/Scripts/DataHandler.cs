@@ -7,16 +7,17 @@ using UnityEngine;
 
 public static class DataHandler
 {
-    public const string FilePath = "Assets/Resources/Data/data.json";
+    public const string RealPath = "Assets/Resources/Data/data.json";
+    public const string FilePath = "Assets/data.json";
     public static List<Item> Import()
     {
-        string jsonString = File.ReadAllText(FilePath);
-        return JsonConvert.DeserializeObject<List<Item>>(jsonString);
+        string jsonString = File.ReadAllText(RealPath);
+        return JsonConvert.DeserializeObject<List<Item>>(jsonString ,new ItemConverter());
     }
 
     public static void Export(Data exportdata)
     {
-       // string jsondata = JsonConvert.SerializeObject(exportdata.Items);
-        //File.WriteAllText(FilePath, jsondata);
+        string jsondata = JsonConvert.SerializeObject(exportdata.Items);
+        File.WriteAllText(FilePath, jsondata);
     }
 }

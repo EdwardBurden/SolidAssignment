@@ -5,6 +5,6 @@ using UnityEngine;
 
 public class GameItem : Item
 {
-    [JsonProperty("icon")]
+    [JsonProperty("icon", Order = 4)]
     public string Game_Icon;
 }

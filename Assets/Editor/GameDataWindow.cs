@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GameDataWindow : EditorWindow
 {
+    private Data MyData = new Data();
+
     [MenuItem("Window/GameDataWindow")]
     static void OpenWindow()
     {
@@ -26,19 +28,13 @@ public class GameDataWindow : EditorWindow
 
     private void AddNew()
     {
-        Data test = new Data();
-        Ship p = new Ship();
-        p.Stats = new Dictionary<StatType, int>();
-        p.Stats.Add(StatType.power, 100);
-        test.Items = new List<Item>();
-        test.Items.Add(p);
-        DataHandler.Export(test);
+        DataHandler.Export(MyData);
     }
 
     private void GetData()
     {
-        var data = DataHandler.Import();
-        Debug.Log(data);
+        MyData.Items = DataHandler.Import();
+
 
 
 

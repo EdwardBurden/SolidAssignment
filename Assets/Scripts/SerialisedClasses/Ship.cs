@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Ship : GameItem
 {
-    [JsonProperty("stats")]
+    [JsonProperty("stats", Order = 5)]
     public Dictionary<StatType, int> Stats;
 }
 
