@@ -12,12 +12,14 @@ public static class DataHandler
     public static List<Item> Import()
     {
         string jsonString = File.ReadAllText(RealPath);
-        return JsonConvert.DeserializeObject<List<Item>>(jsonString ,new ItemConverter());
+        return JsonConvert.DeserializeObject<List<Item>>(jsonString, new ItemConverter());
     }
 
-    public static void Export(Data exportdata)
+    public static void Export(List<Item> exportdata)
     {
-        string jsondata = JsonConvert.SerializeObject(exportdata.Items);
+        string jsondata = JsonConvert.SerializeObject(exportdata);
         File.WriteAllText(FilePath, jsondata);
     }
+
+
 }

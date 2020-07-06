@@ -5,6 +5,17 @@ using UnityEngine;
 
 public class Data
 {
-    [JsonProperty("items")]
-    public List<Item> Items;
+
+    public List<Item> Items { get; private set; }
+
+    public void Pull()
+    {
+        Items = DataHandler.Import();
+    }
+
+    public void Save()
+    {
+        DataHandler.Export(Items);
+    }
+
 }
