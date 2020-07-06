@@ -1,0 +1,1 @@
+{"$type":"System.Collections.Generic.List`1[[Item, Assembly-CSharp]], mscorlib","$values":[{"$type":"Ship, Assembly-CSharp","stats":{"$type":"System.Collections.Generic.Dictionary`2[[StatType, Assembly-CSharp],[System.Int32, mscorlib]], mscorlib","power":100},"icon":null,"id":0,"name":null,"type":0}]}
