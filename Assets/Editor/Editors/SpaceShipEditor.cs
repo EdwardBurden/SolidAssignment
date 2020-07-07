@@ -13,22 +13,26 @@ public class SpaceShipEditor : GameItemEditor
     public static void SetModel(Ship ship)
     {
         Model = ship;
+        SetIcon(Model.Game_Icon);
     }
 
-    public static Ship CreateShip()
+    public static Ship CreateShip(int item_Id, string item_Name)
     {
-        return new Ship() { Game_Icon = GetImageName(), Item_Type = ItemType.Spaceship, Stats = GetStats() };
+        string imageName = GetImageName();
+        GetStats();
+        return new Ship() { Item_Id = item_Id, Item_Name = item_Name, Game_Icon = imageName, Item_Type = ItemType.Spaceship, Stats = Model.Stats };
     }
 
-    private static Dictionary<StatType, int> GetStats()
+    private static void GetStats()
     {
         if (Model.Stats != null && Model.Stats.Count > 0)
         {
-            foreach (var item in Model.Stats)
+
+            foreach (var key in Model.Stats.Keys.ToList())
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(item.Key.ToString());
-                Model.Stats[item.Key] = EditorGUILayout.IntField(item.Value);
+                EditorGUILayout.LabelField(key.ToString());
+                Model.Stats[key] = EditorGUILayout.IntField(Model.Stats[key]);
                 EditorGUILayout.EndHorizontal();
             }
         }
@@ -42,7 +46,7 @@ public class SpaceShipEditor : GameItemEditor
             }
 
         }
-
-        return Model.Stats;
     }
+
+
 }

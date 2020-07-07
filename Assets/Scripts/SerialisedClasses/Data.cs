@@ -8,14 +8,23 @@ public class Data
 
     public List<Item> Items { get; private set; }
 
+    public bool DataAvailable
+    {
+        get { return Items != null && Items.Count > 0; }
+
+    }
+
     public void Pull()
     {
         Items = DataHandler.Import();
+        if (Items == null)
+            Items = new List<Item>();
     }
 
     public void Save()
     {
-        DataHandler.Export(Items);
+        DataHandler.Export(Items); Pull();
     }
+
 
 }

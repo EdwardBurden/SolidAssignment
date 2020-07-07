@@ -4,9 +4,20 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-public class GameItemEditor : Editor
+public abstract class GameItemEditor : Editor
 {
     private static Texture2D Icon;
+
+    public static void SetIcon(string Iconname)
+    {
+        if (string.IsNullOrEmpty(Iconname))
+        {
+            string fullPath = Path.Combine(DataHandler.IconFilePath, Iconname);
+            Icon = (Texture2D)AssetDatabase.LoadAssetAtPath(fullPath, typeof(Texture2D));
+        }
+        else Icon = null;
+    }
+
     public static string GetImageName()
     {
         GUILayout.BeginHorizontal();
