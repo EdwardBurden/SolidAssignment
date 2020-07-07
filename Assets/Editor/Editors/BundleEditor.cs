@@ -12,6 +12,7 @@ public class BundleEditor : GameItemEditor
     public static void SetModel(Bundle model)
     {
         Model = model;
+        SetIcon(Model.Bundle_Asset);
     }
 
     public static Bundle CreateBundle(int item_Id, string item_Name, List<Item> availableItems)

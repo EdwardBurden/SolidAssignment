@@ -10,12 +10,13 @@ public abstract class GameItemEditor : Editor
 
     public static void SetIcon(string Iconname)
     {
-        if (string.IsNullOrEmpty(Iconname))
+        if (!string.IsNullOrEmpty(Iconname))
         {
             string fullPath = Path.Combine(DataHandler.IconFilePath, Iconname);
             Icon = (Texture2D)AssetDatabase.LoadAssetAtPath(fullPath, typeof(Texture2D));
         }
-        else Icon = null;
+        else
+            Icon = null;
     }
 
     public static string GetImageName()

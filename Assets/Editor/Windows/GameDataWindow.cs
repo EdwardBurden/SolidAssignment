@@ -34,6 +34,8 @@ public class GameDataWindow : EditorWindow
     {
         Tab_Editor = GUILayout.Toolbar(Tab_Editor, new string[] { "Create", "View", "Edit" });
 
+        Editor ed = Editor.CreateEditor(MyData.Items[0]);
+
         EditorGUILayout.Space(30);
         switch (Tab_Editor)
         {
@@ -41,6 +43,7 @@ public class GameDataWindow : EditorWindow
                 if (ModelItem == null || EditMode)
                 {
                     ModelItem = new Item() { Item_Type = ItemType.Spaceship };
+                    CleanEditors();
                 }
                 GUI_Create();
                 EditMode = false;
@@ -161,7 +164,6 @@ public class GameDataWindow : EditorWindow
         {
             number = GenerateNewIdFromType();
         }
-        Debug.Log(number);
         return number;
     }
 
