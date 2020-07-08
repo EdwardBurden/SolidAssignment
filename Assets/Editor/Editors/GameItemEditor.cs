@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-public abstract class GameItemEditor : Editor
+public abstract class GameItemEditor
 {
     private static Texture2D Icon;
 
@@ -21,14 +19,14 @@ public abstract class GameItemEditor : Editor
 
     public static string GetImageName()
     {
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("GameItem Icon");
-        GUILayout.BeginHorizontal("box");
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("GameItem Icon");
+        EditorGUILayout.BeginHorizontal("box");
         GUILayout.FlexibleSpace();
         Icon = (Texture2D)EditorGUILayout.ObjectField(Icon, typeof(Texture2D), false, GUILayout.Width(70), GUILayout.Height(70));
         GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-        GUILayout.EndHorizontal();
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndHorizontal();
         if (Icon != null)
             return Path.GetFileName(AssetDatabase.GetAssetPath(Icon.GetInstanceID()));
         else

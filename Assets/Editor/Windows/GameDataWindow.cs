@@ -9,13 +9,12 @@ using UnityEngine.UIElements;
 
 public class GameDataWindow : EditorWindow
 {
+    private Vector2 scrollPos;
+    string t = "This is a string inside a Scroll view!";
     private Data MyData = new Data();
     private int Tab_Editor = 1;
-
-    #region 
     private Item ModelItem = new Item() { Item_Type = ItemType.Spaceship };
     private bool EditMode;
-    #endregion
 
     [MenuItem("Window/GameDataWindow")]
     static void OpenWindow()
@@ -24,26 +23,18 @@ public class GameDataWindow : EditorWindow
         window.Show();
     }
 
-    [MenuItem("CONTEXT/GameDataWindow/RESET", false, 0)]
-    static void Init()
-    {
-        Debug.Log("here");
-    }
+    #region Gui Stuff
 
     private void OnGUI()
     {
         Tab_Editor = GUILayout.Toolbar(Tab_Editor, new string[] { "Create", "View", "Edit" });
-
-        Editor ed = Editor.CreateEditor(MyData.Items[0]);
-
         EditorGUILayout.Space(30);
         switch (Tab_Editor)
         {
             case 0:
                 if (ModelItem == null || EditMode)
                 {
-                    ModelItem = new Item() { Item_Type = ItemType.Spaceship };
-                    CleanEditors();
+                    ResetModel();
                 }
                 GUI_Create();
                 EditMode = false;
@@ -60,26 +51,21 @@ public class GameDataWindow : EditorWindow
                 GUI_Edit();
                 break;
         }
-
-
-
         GUILayout.BeginArea(new Rect(position.width - 100, position.height - 50, 100, 100));
         if (GUILayout.Button("Refresh", GUILayout.Height(20)))
         {
             MyData.Pull();
         }
-
-        if (GUILayout.Button("Nuke Data", GUILayout.Height(20)))
+        if (GUILayout.Button("Clear All Data", GUILayout.Height(20)))
         {
-            MyData.Items.Clear();
-            MyData.Save();
+            ConfirmPopup.Open();
         }
         GUILayout.EndArea();
     }
 
     private void GUI_Create()
     {
-        ShowNameAndID();
+        GUI_ShowNameAndId();
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Item Type");
         ModelItem.Item_Type = (ItemType)EditorGUILayout.Popup((int)ModelItem.Item_Type, Enum.GetNames(typeof(ItemType)));
@@ -107,19 +93,78 @@ public class GameDataWindow : EditorWindow
             default:
                 break;
         }
-        Add();
+        GUI_Add();
     }
 
-    private void OnInspectorUpdate()
-    {
-        Repaint();
-    }
-
-    private void ShowNameAndID()
+    private void GUI_ViewExisting()
     {
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Item ID");
-        GUILayout.Label(ModelItem.Item_Id.ToString());
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(this.position.width), GUILayout.Height(this.position.height*0.8f));
+        if (MyData.DataAvailable)
+        {
+            for (int i = 0; i < MyData.Items.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(MyData.Items[i].Item_Name , GUILayout.Width(200));
+                EditorGUILayout.LabelField(MyData.Items[i].Item_Type.ToString() , GUILayout.Width(100));
+                if (GUILayout.Button("Edit"))
+                {
+                    Tab_Editor = 2;
+                    ModelItem = MyData.Items[i];
+                    EditMode = true;
+                    SetModel();
+                }
+                if (GUILayout.Button("Delete"))
+                {
+                    MyData.Items.Remove(MyData.Items[i]);
+                    MyData.Save();
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndHorizontal();
+    }
+
+    private void GUI_Edit()
+    {
+        if (ModelItem != null)
+        {
+            GUI_ShowNameAndId();
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Item Type");
+            GUILayout.Label(ModelItem.Item_Type.ToString());
+            EditorGUILayout.EndHorizontal();
+            switch (ModelItem.Item_Type)
+            {
+                case ItemType.Spaceship:
+                    Ship ship = SpaceShipEditor.CreateShip(ModelItem.Item_Id, ModelItem.Item_Name);
+                    ModelItem = ship;
+                    break;
+                case ItemType.Powerup:
+                    PowerUp powerUp = PowerUpEditor.CreatePowerUp(ModelItem.Item_Id, ModelItem.Item_Name);
+                    ModelItem = powerUp;
+                    break;
+                case ItemType.Currency:
+                    Currency currency = CurrencyEditor.CreateCurrency(ModelItem.Item_Id, ModelItem.Item_Name);
+                    ModelItem = currency;
+                    break;
+                case ItemType.Bundle:
+                    Bundle bundle = BundleEditor.CreateBundle(ModelItem.Item_Id, ModelItem.Item_Name, MyData.Items);
+                    ModelItem = bundle;
+                    break;
+                default:
+                    break;
+            }
+            GUI_Save();
+        }
+    }
+
+    private void GUI_ShowNameAndId()
+    {
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Item ID");
+        EditorGUILayout.LabelField(ModelItem.Item_Id.ToString());
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -128,29 +173,28 @@ public class GameDataWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    private void Save()
+    private void GUI_Save()
     {
         if (GUILayout.Button("Save"))
         {
             int changedItem = MyData.Items.FindIndex(x => x.Item_Id == ModelItem.Item_Id);
             MyData.Items[changedItem] = ModelItem;
             MyData.Save();
-
-            //  ModelItem = new Item() { Item_Type = ItemType.Spaceship };
         }
     }
 
 
-    private void Add()
+    private void GUI_Add()
     {
         if (GUILayout.Button("Add"))
         {
             MyData.Items.Add(ModelItem);
             MyData.Save();
-            ModelItem = new Item() { Item_Type = ItemType.Spaceship };
-            CleanEditors();
+            ResetModel();
         }
     }
+
+    #endregion
 
     private int GenerateId()
     {
@@ -184,73 +228,22 @@ public class GameDataWindow : EditorWindow
     {
         MyData.Pull();
         titleContent = new GUIContent("Game Data Window");
+        ResetModel();
+        ConfirmPopup.ConfirmCallBack += DestroyAllData;
+    }
+
+    private void DestroyAllData()
+    {
+        MyData.Items.Clear();
+        MyData.Save();
+        ResetModel();
+    }
+
+    private void ResetModel()
+    {
+        ModelItem = new Item() { Item_Type = ItemType.Spaceship };
         CleanEditors();
     }
-
-    private void GUI_ViewExisting()
-    {
-        if (MyData.DataAvailable)
-        {
-            for (int i = 0; i < MyData.Items.Count; i++)
-            {
-                EditorGUILayout.BeginHorizontal();
-
-                GUILayout.Label(MyData.Items[i].Item_Name);
-                if (GUILayout.Button("Edit"))
-                {
-                    Tab_Editor = 2;
-                    ModelItem = MyData.Items[i];
-                    EditMode = true;
-                    SetModel();
-                }
-
-                if (GUILayout.Button("Delete"))
-                {
-                    MyData.Items.Remove(MyData.Items[i]);
-                    MyData.Save();
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-        }
-    }
-
-    private void GUI_Edit()
-    {
-        if (ModelItem != null)
-        {
-            ShowNameAndID();
-
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Item Type");
-            GUILayout.Label(ModelItem.Item_Type.ToString());
-            EditorGUILayout.EndHorizontal();
-
-            switch (ModelItem.Item_Type)
-            {
-                case ItemType.Spaceship:
-                    Ship ship = SpaceShipEditor.CreateShip(ModelItem.Item_Id, ModelItem.Item_Name);
-                    ModelItem = ship;
-                    break;
-                case ItemType.Powerup:
-                    PowerUp powerUp = PowerUpEditor.CreatePowerUp(ModelItem.Item_Id, ModelItem.Item_Name);
-                    ModelItem = powerUp;
-                    break;
-                case ItemType.Currency:
-                    Currency currency = CurrencyEditor.CreateCurrency(ModelItem.Item_Id, ModelItem.Item_Name);
-                    ModelItem = currency;
-                    break;
-                case ItemType.Bundle:
-                    Bundle bundle = BundleEditor.CreateBundle(ModelItem.Item_Id, ModelItem.Item_Name, MyData.Items);
-                    ModelItem = bundle;
-                    break;
-                default:
-                    break;
-            }
-            Save();
-        }
-
-    }
-
 
     private void SetModel()
     {

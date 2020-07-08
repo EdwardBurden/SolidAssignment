@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEditor;
 
-public class CurrencyEditor : Editor
+public class CurrencyEditor
 {
     private static Currency Model = new Currency();
 

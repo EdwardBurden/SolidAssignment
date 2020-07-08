@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEngine;
 
 public class SpaceShipEditor : GameItemEditor
 {
     private static Ship Model = new Ship();
-
 
     public static void SetModel(Ship ship)
     {

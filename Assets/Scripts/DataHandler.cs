@@ -14,13 +14,13 @@ public static class DataHandler
 
     public static List<Item> Import()
     {
-        if (!File.Exists(OriginalDataPath))
+        if (!File.Exists(DataPath))
         {
-            FileStream stream = File.Create(OriginalDataPath);
+            FileStream stream = File.Create(DataPath);
             stream.Close();
         }
 
-        string jsonString = File.ReadAllText(OriginalDataPath);
+        string jsonString = File.ReadAllText(DataPath);
         return JsonConvert.DeserializeObject<List<Item>>(jsonString, new ItemConverter());
 
     }
