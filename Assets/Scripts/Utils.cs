@@ -25,7 +25,9 @@ public enum StatType
     [EnumMember(Value = "power")]
     Power,
     [EnumMember(Value = "speed")]
-    Speed
+    Speed,
+    [EnumMember(Value = "hull")]
+    HullPoints
 }
 
 //add description attribute later

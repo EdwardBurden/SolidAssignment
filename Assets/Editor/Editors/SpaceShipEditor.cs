@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 public class SpaceShipEditor : GameItemEditor
 {
@@ -28,7 +29,7 @@ public class SpaceShipEditor : GameItemEditor
             foreach (var key in Model.Stats.Keys.ToList())
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(key.ToString());
+                EditorGUILayout.LabelField(key.ToString(), GUILayout.Width(200));
                 Model.Stats[key] = EditorGUILayout.IntField(Model.Stats[key]);
                 EditorGUILayout.EndHorizontal();
             }

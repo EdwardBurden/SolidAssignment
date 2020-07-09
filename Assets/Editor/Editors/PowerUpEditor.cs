@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEditor;
+using UnityEngine;
 
 public class PowerUpEditor : GameItemEditor
 {
@@ -22,7 +23,7 @@ public class PowerUpEditor : GameItemEditor
     private static void GetStatType()
     {
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Stat Type");
+        EditorGUILayout.LabelField("Stat Type", GUILayout.Width(200));
         Model.PowerUp_StatType = (StatType)EditorGUILayout.Popup((int)Model.PowerUp_StatType, Enum.GetNames(typeof(StatType)));
         EditorGUILayout.EndHorizontal();
     }
@@ -30,7 +31,7 @@ public class PowerUpEditor : GameItemEditor
     private static void GetAmount()
     {
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Stat Value");
+        EditorGUILayout.LabelField("Stat Value", GUILayout.Width(200));
         Model.PowerUp_Value = EditorGUILayout.IntField(Model.PowerUp_Value);
         EditorGUILayout.EndHorizontal();
     }

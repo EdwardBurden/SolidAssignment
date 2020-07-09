@@ -20,7 +20,7 @@ public abstract class GameItemEditor
     public static string GetImageName()
     {
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("GameItem Icon");
+        EditorGUILayout.LabelField("GameItem Icon", GUILayout.Width(200));
         EditorGUILayout.BeginHorizontal("box");
         GUILayout.FlexibleSpace();
         Icon = (Texture2D)EditorGUILayout.ObjectField(Icon, typeof(Texture2D), false, GUILayout.Width(70), GUILayout.Height(70));

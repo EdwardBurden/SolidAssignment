@@ -9,26 +9,47 @@ using UnityEngine;
 public static class DataHandler
 {
     public const string IconFilePath = "Assets/Resources/Textures";
-    public const string OriginalDataPath = "Assets/Resources/Data/data.json";
-    public const string DataPath = "Assets/data.json";
 
-    public static List<Item> Import()
+    public static bool CanImport(string targetPath)
     {
-        if (!File.Exists(DataPath))
+        if (!string.IsNullOrWhiteSpace(targetPath) && File.Exists(targetPath))
         {
-            FileStream stream = File.Create(DataPath);
-            stream.Close();
+            try
+            {
+                string jsonString = File.ReadAllText(targetPath);
+                if (!string.IsNullOrWhiteSpace(jsonString))
+                {
+                    var file = JsonConvert.DeserializeObject<List<Item>>(jsonString, new ItemConverter());
+                    if (file != null)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
-
-        string jsonString = File.ReadAllText(DataPath);
-        return JsonConvert.DeserializeObject<List<Item>>(jsonString, new ItemConverter());
-
+        return false;
     }
 
-    public static void Export(List<Item> exportdata)
+    public static List<Item> Import(string targetPath)
+    {
+        string jsonString = File.ReadAllText(targetPath);
+        return JsonConvert.DeserializeObject<List<Item>>(jsonString, new ItemConverter());
+    }
+
+    public static bool CanExport(string targetPath)
+    {
+        return true;
+    }
+
+    public static void Export(List<Item> exportdata , string path)
     {
         string jsondata = JsonConvert.SerializeObject(exportdata);
-        File.WriteAllText(DataPath, jsondata);
+        File.WriteAllText(path, jsondata);
     }
 
 

@@ -29,7 +29,7 @@ public class BundleEditor : GameItemEditor
     private static void GetBundlePrice()
     {
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Bundle Price in $");
+        EditorGUILayout.LabelField("Bundle Price in $", GUILayout.Width(200));
         Price = EditorGUILayout.FloatField(Price);
         Model.Bundle_Price = Price.ToString("C", CultureInfo.GetCultureInfo("en-us"));
         EditorGUILayout.EndHorizontal();
@@ -48,7 +48,7 @@ public class BundleEditor : GameItemEditor
                     if (item != null)
                     {
                         EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField("Select Item");
+                        EditorGUILayout.LabelField("Select Item", GUILayout.Width(200));
                         int itemIndex = SelectableItems.IndexOf(item);
                         itemIndex = EditorGUILayout.Popup(itemIndex, nameArray);
                         Model.Bundle_Items[i].Reference = SelectableItems[itemIndex].Item_Id;

@@ -8,7 +8,7 @@ public class ConfirmPopup : EditorWindow
 {
     public static Action ConfirmCallBack;
 
-    public static void Open()
+    public static void Init()
     {
         ConfirmPopup window = ScriptableObject.CreateInstance<ConfirmPopup>();
         window.position = new Rect(Screen.width / 2, Screen.height / 2,  200, 80);
